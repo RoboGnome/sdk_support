@@ -71,6 +71,9 @@
 #elif defined(MGM210PB32JIA)
 #include "mgm210pb32jia.h"
 
+#elif defined(MGM211LA02JNF)
+#include "mgm211la02jnf.h"
+
 #else
 #error "em_device.h: PART NUMBER undefined"
 #endif
