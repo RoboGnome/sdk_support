@@ -7,7 +7,7 @@ category: "Bluetooth|Stack|Direction Finding"
 quality: "production"
 root_path: "protocol/bluetooth"
 requires:
-  - name: bluetooth_stack
+  - name: bluetooth_controller
   - name: device_supports_bluetooth_cte
 provides:
   - name: "bluetooth_feature_aoa_transmitter"
@@ -15,4 +15,8 @@ template_contribution:
   - name: bluetooth_bgapi_class
     value:
       class: "cte_transmitter"
+    priority: 10
+  - name: bluetooth_controller_feature_init
+    value:
+      function: "sl_btctrl_init_cte()"
     priority: 10
