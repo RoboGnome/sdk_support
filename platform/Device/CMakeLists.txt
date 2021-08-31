@@ -1,13 +1,67 @@
 # EFR32 Device Library CMake file
 #
-# Configures the required linker script, startup script, and system file and adds them to the build
+# Checks if the device folder is present and adds linker script, system files 
+# and compiler flags for the device to the build
 
 if (NOT DEFINED EFR32_DEVICE)
 	error("No Device defined!")
 endif()
 
-message("Adding device library for: ${CPU_FAMILY_U}")
 
+string(TOUPPER ${EFR32_DEVICE} DEVICE_U)
+message("Processor: ${DEVICE_U}")
+
+set(DEVICE_FOUND FALSE)
+set(TEMP_DEVICE "${DEVICE_U}")
+
+while (NOT DEVICE_FOUND)
+    if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${TEMP_DEVICE}")
+        set(DEVICE_FOUND TRUE)
+    else ()
+        string(LENGTH ${TEMP_DEVICE} TEMP_DEVICE_LEN)
+        math(EXPR TEMP_DEVICE_LEN "${TEMP_DEVICE_LEN}-1")
+        string(SUBSTRING ${TEMP_DEVICE} 0 ${TEMP_DEVICE_LEN} TEMP_DEVICE)
+    endif ()
+
+    if (${TEMP_DEVICE_LEN} EQUAL "0")
+        break()
+    endif ()
+endwhile ()
+
+if (NOT DEVICE_FOUND)
+    message(FATAL_ERROR "failed to find device")
+endif ()
+
+set(CPU_FAMILY_U ${TEMP_DEVICE})
+string(TOLOWER ${CPU_FAMILY_U} CPU_FAMILY_L)
+message("Family: ${CPU_FAMILY_U}")
+
+# TODO: Complete list and check CPUs
+if (CPU_FAMILY_U STREQUAL "EFR32BG1B" OR CPU_FAMILY_U STREQUAL "EFR32BG1P"
+        OR CPU_FAMILY_U STREQUAL "EFR32BG1V" OR CPU_FAMILY_U STREQUAL "EFR32BG12P"
+        OR CPU_FAMILY_U STREQUAL "EFR32BG13P" OR CPU_FAMILY_U STREQUAL "EFR32BG21"
+        OR CPU_FAMILY_U STREQUAL "EFR32BG122" OR CPU_FAMILY_U STREQUAL "EFR32FG1P"
+        OR CPU_FAMILY_U STREQUAL "EFR32FG1V" OR CPU_FAMILY_U STREQUAL "EFR32FG12P"
+        OR CPU_FAMILY_U STREQUAL "EFR32FG1V" OR CPU_FAMILY_U STREQUAL "EFR32FG12P"
+        OR CPU_FAMILY_U STREQUAL "EFR32FG13P" OR CPU_FAMILY_U STREQUAL "EFR32FG14P"
+        OR CPU_FAMILY_U STREQUAL "EFR32FG14V" OR CPU_FAMILY_U STREQUAL "EFR32FG22"
+        OR CPU_FAMILY_U STREQUAL "EFR32FG23" OR CPU_FAMILY_U STREQUAL "EFR32MG1B"
+        OR CPU_FAMILY_U STREQUAL "EFR32MG1P" OR CPU_FAMILY_U STREQUAL "EFR32MG1V"
+        OR CPU_FAMILY_U STREQUAL "EFR32MG12P" OR CPU_FAMILY_U STREQUAL "EFR32MG13P"
+        OR CPU_FAMILY_U STREQUAL "EFR32MG14P" OR CPU_FAMILY_U STREQUAL "EFR32FG22")
+    message("Architecture: cortex-m4")
+    set(CPU_TYPE "m4")
+    set(CPU_FIX "")
+elseif (CPU_FAMILY_U STREQUAL "EFR32MG21" OR CPU_FAMILY_U STREQUAL "EFR32BG21"
+        OR CPU_FAMILY_U STREQUAL "EFR32MG22" OR CPU_FAMILY_U STREQUAL "EFR32BG22")
+    message("Architecture: cortex-m33")
+    set(CPU_TYPE "m33")
+    set(CPU_FIX "-march=armv8-m.main+dsp -mcmse -mfpu=fpv5-sp-d16 -mfloat-abi=hard -falign-functions=2")
+else ()
+    message("Architecture: cortex-m3 (default)")
+    set(CPU_TYPE "m3")
+    set(CPU_FIX "-mfix-cortex-m3-ldrd")
+endif ()
 
 add_library(efr32_device STATIC
 			${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Source/GCC/startup_${CPU_FAMILY_L}.c
@@ -17,33 +71,46 @@ target_include_directories(efr32_device
 							PUBLIC 
 							${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Include)
 
-target_link_libraries(efr32_device cmsis bareMetal_efr32)
 
 # Set linker definitions
 set(EFR32_LINKER_FILE 
 		${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Source/GCC/${CPU_FAMILY_L}.ld)
 
-
+		
 # Set compiler & linke definitions
 set(EFR32_DEVICE_C_FLAGS 
-	-D${EFR32_DEVICE})
+    -mthumb 
+    -mcpu=cortex-${CPU_TYPE}
+    ${CPU_FIX}
+    -D${EFR32_DEVICE}
+    )
 
 set(EFR32_DEVICE_CXX_FLAGS 
+    -mthumb 
+    -mcpu=cortex-${CPU_TYPE}
+    ${CPU_FIX}
+    -fno-exceptions 
+	-fno-rtti
 	-D${EFR32_DEVICE})
 
 set(EFR32_DEVICE_C_LFLAGS 
+    -Wl,-Map=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.map
 	-Wl,-T${EFR32_LINKER_FILE})
 
 set(EFR32_DEVICE_CXX_LFLAGS
+    -Wl,-Map=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.map
 	-Wl,-T${EFR32_LINKER_FILE})
 
 
-target_compile_options(bareMetal_efr32
-	INTERFACE
+target_compile_options(efr32_device
+	PUBLIC
 	$<$<COMPILE_LANGUAGE:C>:${EFR32_DEVICE_C_FLAGS}>
 	$<$<COMPILE_LANGUAGE:CXX>:${EFR32_DEVICE_CXX_FLAGS}>)
 
 target_link_options(efr32_device
-	INTERFACE 
+    PUBLIC 
 	$<$<COMPILE_LANGUAGE:C>:${EFR32_DEVICE_C_LFLAGS}>
 	$<$<COMPILE_LANGUAGE:CXX>:${EFR32_DEVICE_CXX_LFLAGS}>)
+
+    
+target_link_libraries(efr32_device cmsis)

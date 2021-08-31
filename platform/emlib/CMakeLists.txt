@@ -51,4 +51,4 @@ target_include_directories(emlib
                                 PUBLIC 
                                 ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
-target_link_libraries(emlib PUBLIC efr32_device bareMetal_efr32)
+target_link_libraries(emlib PUBLIC efr32_device)
