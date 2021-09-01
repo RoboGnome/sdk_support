@@ -51,16 +51,22 @@ if (CPU_FAMILY_U STREQUAL "EFR32BG1B" OR CPU_FAMILY_U STREQUAL "EFR32BG1P"
         OR CPU_FAMILY_U STREQUAL "EFR32MG14P" OR CPU_FAMILY_U STREQUAL "EFR32FG22")
     message("Architecture: cortex-m4")
     set(CPU_TYPE "m4")
-    set(CPU_FIX "")
+    set(CPU_FIX -mfpu=fpv4-sp-d16 
+                -mfloat-abi=softfp)
+
 elseif (CPU_FAMILY_U STREQUAL "EFR32MG21" OR CPU_FAMILY_U STREQUAL "EFR32BG21"
         OR CPU_FAMILY_U STREQUAL "EFR32MG22" OR CPU_FAMILY_U STREQUAL "EFR32BG22")
     message("Architecture: cortex-m33")
     set(CPU_TYPE "m33")
-    set(CPU_FIX "-march=armv8-m.main+dsp -mcmse -mfpu=fpv5-sp-d16 -mfloat-abi=hard -falign-functions=2")
+    set(CPU_FIX -march=armv8-m.main+dsp 
+                -mcmse 
+                -mfpu=fpv5-sp-d16 
+                -mfloat-abi=hard 
+                -falign-functions=2)
 else ()
     message("Architecture: cortex-m3 (default)")
     set(CPU_TYPE "m3")
-    set(CPU_FIX "-mfix-cortex-m3-ldrd")
+    set(CPU_FIX -mfix-cortex-m3-ldrd)
 endif ()
 
 add_library(efr32_device STATIC
@@ -77,33 +83,42 @@ set(EFR32_LINKER_FILE
 		${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Source/GCC/${CPU_FAMILY_L}.ld)
 
 		
-# Set compiler & linke definitions
+# C Flags
 set(EFR32_DEVICE_C_FLAGS 
     -mthumb 
     -mcpu=cortex-${CPU_TYPE}
-    ${CPU_FIX}
     -D${EFR32_DEVICE}
-    )
-
-set(EFR32_DEVICE_CXX_FLAGS 
-    -mthumb 
-    -mcpu=cortex-${CPU_TYPE}
     ${CPU_FIX}
-    -fno-exceptions 
-	-fno-rtti
-	-D${EFR32_DEVICE})
-
-set(EFR32_DEVICE_C_LFLAGS 
+    )
+    
+set(EFR32_DEVICE_C_LFLAGS
+    ${EFR32_DEVICE_C_FLAGS}
     -Wl,-Map=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.map
 	-Wl,-T${EFR32_LINKER_FILE})
+    
+
+# C++ Flags
+set(EFR32_DEVICE_CXX_FLAGS 
+        ${EFR32_DEVICE_C_FLAGS}
+        -fno-exceptions 
+        -fno-rtti
+        )
 
 set(EFR32_DEVICE_CXX_LFLAGS
+    ${EFR32_DEVICE_CXX_FLAGS}
     -Wl,-Map=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_PROJECT_NAME}.map
 	-Wl,-T${EFR32_LINKER_FILE})
+
+
+# Assembler Flags
+set(EFR32_ASM_FLAGS
+	${EFR32_C_FLAGS} 
+	-x assembler-with-cpp)
 
 
 target_compile_options(efr32_device
 	PUBLIC
+    $<$<COMPILE_LANGUAGE:ASM>:${EFR32_ASM_FLAGS}>
 	$<$<COMPILE_LANGUAGE:C>:${EFR32_DEVICE_C_FLAGS}>
 	$<$<COMPILE_LANGUAGE:CXX>:${EFR32_DEVICE_CXX_FLAGS}>)
 
