@@ -33,6 +33,7 @@ if (NOT DEVICE_FOUND)
 endif ()
 
 set(CPU_FAMILY_U ${TEMP_DEVICE})
+set(CPU_FAMILY_U ${CPU_FAMILY_U} PARENT_SCOPE ) #<-- set in the parent scope too
 string(TOLOWER ${CPU_FAMILY_U} CPU_FAMILY_L)
 message("Family: ${CPU_FAMILY_U}")
 
