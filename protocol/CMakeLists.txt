@@ -1,4 +1,4 @@
-project(protocol)
+project(efr32_protocol)
 
 add_library(${PROJECT_NAME} INTERFACE)
 

@@ -1,4 +1,4 @@
-project(hardware)
+project(efr32_hardware)
 
 add_library(${PROJECT_NAME} INTERFACE)
 

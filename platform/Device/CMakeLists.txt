@@ -3,9 +3,12 @@
 # Checks if the device folder is present and adds linker script, system files 
 # and compiler flags for the device to the build
 
+project(efr32_device)
+
 if (NOT DEFINED EFR32_DEVICE)
 	error("No Device defined!")
 endif()
+
 
 
 string(TOUPPER ${EFR32_DEVICE} DEVICE_U)
@@ -70,11 +73,11 @@ else ()
     set(CPU_FIX -mfix-cortex-m3-ldrd)
 endif ()
 
-add_library(efr32_device STATIC
+add_library(${PROJECT_NAME} STATIC
 			${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Source/GCC/startup_${CPU_FAMILY_L}.c
 			${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Source/system_${CPU_FAMILY_L}.c)
 
-target_include_directories(efr32_device 
+target_include_directories(${PROJECT_NAME} 
 							PUBLIC 
 							${CMAKE_CURRENT_LIST_DIR}/SiliconLabs/${CPU_FAMILY_U}/Include)
 
@@ -117,16 +120,16 @@ set(EFR32_ASM_FLAGS
 	-x assembler-with-cpp)
 
 
-target_compile_options(efr32_device
+target_compile_options(${PROJECT_NAME}
 	PUBLIC
     $<$<COMPILE_LANGUAGE:ASM>:${EFR32_ASM_FLAGS}>
 	$<$<COMPILE_LANGUAGE:C>:${EFR32_DEVICE_C_FLAGS}>
 	$<$<COMPILE_LANGUAGE:CXX>:${EFR32_DEVICE_CXX_FLAGS}>)
 
-target_link_options(efr32_device
+target_link_options(${PROJECT_NAME}
     PUBLIC 
 	$<$<COMPILE_LANGUAGE:C>:${EFR32_DEVICE_C_LFLAGS}>
 	$<$<COMPILE_LANGUAGE:CXX>:${EFR32_DEVICE_CXX_LFLAGS}>)
 
     
-target_link_libraries(efr32_device cmsis)
+target_link_libraries(${PROJECT_NAME} cmsis)
