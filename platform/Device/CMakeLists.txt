@@ -132,4 +132,4 @@ target_link_options(${PROJECT_NAME}
 	$<$<COMPILE_LANGUAGE:CXX>:${EFR32_DEVICE_CXX_LFLAGS}>)
 
     
-target_link_libraries(${PROJECT_NAME} cmsis)
+target_link_libraries(${PROJECT_NAME} cmsis kit_common_bsp)
