@@ -170,6 +170,77 @@ RAIL_ENUM(RAIL_BLE_Phy_t) {
 #define RAIL_BLE_Coded500kbps ((RAIL_BLE_Phy_t) RAIL_BLE_Coded500kbps)
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
+/// @addtogroup BLE_PHY BLE Radio Configurations
+/// Radio configurations for the RAIL BLE Accelerator
+///
+/// These radio configurations are used to configure BLE when a function such
+/// as \ref RAIL_BLE_ConfigPhy1MbpsViterbi() is called. Each radio
+/// configuration listed below is compiled into the RAIL library as a weak
+/// symbol that will take into account per-die defaults. If the board
+/// configuration in use has different settings than the default, such as a
+/// different radio subsystem clock frequency, these radio configurations can
+/// be overriden to account for those settings.
+/// @{
+
+/**
+ * Default PHY to use for BLE 1M non-Viterbi. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_1MBPS_NON_VITERBI is 0.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy1Mbps;
+
+/**
+ * Default PHY to use for BLE 2M non-Viterbi. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_2MBPS_NON_VITERBI is 0.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy2Mbps;
+
+/**
+ * Default PHY to use for BLE 1M Viterbi. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_1MBPS_VITERBI is 0.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy1MbpsViterbi;
+
+/**
+ * Default PHY to use for BLE 2M Viterbi. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_2MBPS_VITERBI is 0.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy2MbpsViterbi;
+
+/**
+ * PHY to use for BLE 2M with AoX functionality. Will be NULL if either
+ * \ref RAIL_BLE_SUPPORTS_2MBPS_VITERBI or \ref RAIL_BLE_SUPPORTS_AOX is 0.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy2MbpsAox;
+
+/**
+ * Default PHY to use for BLE Coded 125kbps. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_CODED_PHY is 0. This PHY can receive on both
+ * 125kbps and 500kbps BLE Coded, but will only transmit at 125kbps.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy125kbps;
+
+/**
+ * Default PHY to use for BLE Coded 500kbps. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_CODED_PHY is 0. This PHY can receive on both
+ * 125kbps and 500kbps BLE Coded, but will only transmit at 125kbps.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_Phy500kbps;
+
+/**
+ * Default PHY to use for BLE Simulscan. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_SIMULSCAN_PHY is 0. This PHY can receive on 1Mbps
+ * as well as 125kbps and 500kbps BLE Coded, but will only transmit at 1Mbps.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_PhySimulscan;
+
+/**
+ * Default 1Mbps Quuppa PHY. Will be NULL if
+ * \ref RAIL_BLE_SUPPORTS_QUUPPA is 0.
+ */
+extern const RAIL_ChannelConfig_t *const RAIL_BLE_PhyQuuppa;
+
+/// @} // End of group BLE_PHY
+
 // Defines for subPhyID field in RAIL_RxPacketDetails_t
 /** subPhyId indicating a 500kbps packet */
 #define RAIL_BLE_RX_SUBPHY_ID_500K     (0U)
@@ -181,6 +252,23 @@ RAIL_ENUM(RAIL_BLE_Phy_t) {
 #define RAIL_BLE_RX_SUBPHY_ID_INVALID  (3U)
 /** subPhyId indicating the total count */
 #define RAIL_BLE_RX_SUBPHY_COUNT       (4U)
+
+/**
+ * @enum RAIL_BLE_SignalIdentifierMode_t
+ * @brief Available Signal Identifier modes.
+ */
+RAIL_ENUM(RAIL_BLE_SignalIdentifierMode_t) {
+  /* BLE 1Mbps (GFSK) detection mode. */
+  RAIL_BLE_SIGNAL_IDENTIFIER_MODE_1MBPS = 1,
+  /* BLE 2Mbps (GFSK) detection mode. */
+  RAIL_BLE_SIGNAL_IDENTIFIER_MODE_2MBPS
+};
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_BLE_SIGNAL_IDENTIFIER_MODE_2MBPS ((RAIL_BLE_SignalIdentifierMode_t)RAIL_BLE_SIGNAL_IDENTIFIER_MODE_2MBPS)
+#define RAIL_BLE_SIGNAL_IDENTIFIER_MODE_1MBPS ((RAIL_BLE_SignalIdentifierMode_t)RAIL_BLE_SIGNAL_IDENTIFIER_MODE_1MBPS)
+#endif
 
 /**
  * @struct RAIL_BLE_State_t
@@ -389,6 +477,9 @@ RAIL_Status_t RAIL_BLE_ConfigChannelRadioParams(RAIL_Handle_t railHandle,
  * will be changed, and then receive will be entered at the start time given.
  * The new receive will have a timeout of 30 us, which means that this function
  * should only be called if the offset unit is 30 us.
+ *
+ * This function is extremely time-sensitive, and may only be called within the
+ * interrupt context of a \ref RAIL_EVENT_RX_PACKET_RECEIVED event.
  */
 RAIL_Status_t RAIL_BLE_PhySwitchToRx(RAIL_Handle_t railHandle,
                                      RAIL_BLE_Phy_t phy,
@@ -398,6 +489,45 @@ RAIL_Status_t RAIL_BLE_PhySwitchToRx(RAIL_Handle_t railHandle,
                                      uint32_t accessAddress,
                                      uint16_t logicalChannel,
                                      bool disableWhitening);
+
+/**
+ * Configure signal identifier for BLE signal detection.
+ *
+ * @param[in] railHandle A RAIL instance handle.
+ * @param[in] signalIdentifierMode Mode of signal identifier operation.
+ *
+ * This features allows detection of BLE signal on air based on the mode.
+ * This function must be called once before \ref RAIL_BLE_EnableSignalIdentifier
+ * to configure signal identifier.
+ * Subsequent calls to this to function to reconfigure the signal identifier
+ * require a new call to \ref RAIL_BLE_EnableSignalIdentifier() to re-enable the
+ * signal identifier.
+ *
+ * To enable event for signal detection \ref RAIL_ConfigEvents() must be called
+ * for enabling \ref RAIL_EVENT_SIGNAL_DETECTED.
+ *
+ * @return Status code indicating success of the function call.
+ */
+RAIL_Status_t RAIL_BLE_ConfigSignalIdentifier(RAIL_Handle_t railHandle,
+                                              const RAIL_BLE_SignalIdentifierMode_t signalIdentifierMode);
+
+/**
+ * Enable or Disable signal identifier for BLE signal detection.
+ *
+ * @param[in] railHandle A RAIL instance handle.
+ * @param[in] enable Signal Identifer is enabled if true, disabled if false.
+ *
+ * \ref RAIL_BLE_ConfigSignalIdentifier must be called once before calling this
+ * function to configure signal identifier.
+ * Once a signal is detected signal identifier will be turned off and this
+ * function should be called to re-enable signal identifier without needing to
+ * call \ref RAIL_BLE_ConfigSignalIdentifier if the signal identifier is already
+ * configured.
+ *
+ * @return Status code indicating success of the function call.
+ */
+RAIL_Status_t RAIL_BLE_EnableSignalIdentifier(RAIL_Handle_t railHandle,
+                                              bool enable);
 
 /******************************************************************************
  * Angle of Arrival/Departure (AoX)
@@ -507,7 +637,9 @@ typedef struct RAIL_BLE_AoxConfig {
    */
   uint32_t * cteBuffAddr;
   /**
-   * Address to first element of antenna pattern array.
+   * Address to first element of antenna pattern array. Array must be in RAM.
+   * Each element of the array contains an antenna number. The switching pattern
+   * is defined by the order of antennas in this array.
    */
   uint8_t * antArrayAddr;
   /**
@@ -571,6 +703,15 @@ bool RAIL_BLE_LockCteBuffer(RAIL_Handle_t railHandle, bool lock);
 bool RAIL_BLE_CteBufferIsLocked(RAIL_Handle_t railHandle);
 
 /**
+ * Get the offset into CTE sample of CTE data.
+ *
+ * @param[in] railHandle A handle for RAIL instance.
+ * @return The offset of CTE data in a CTE sample in bytes.
+ * On unsupported platforms this returns 0.
+ */
+uint8_t RAIL_BLE_GetCteSampleOffset(RAIL_Handle_t railHandle);
+
+/**
  * Get the effective sample rate used by the ADC to capture the CTE samples.
  *
  * @param[in] railHandle A handle for RAIL instance.
@@ -601,6 +742,7 @@ RAIL_Status_t RAIL_BLE_ConfigAox(RAIL_Handle_t railHandle,
 /**
  * Perform one time initialization of AoX registers.
  * This function must be called before \ref RAIL_BLE_ConfigAox
+ * and before configuring the BLE PHY.
  *
  * @param[in] railHandle A RAIL instance handle.
  * @return RAIL_Status_t indicating success or failure of the call.
@@ -609,8 +751,9 @@ RAIL_Status_t RAIL_BLE_InitCte(RAIL_Handle_t railHandle);
 
 /**
  * Perform initialization of AoX antenna GPIO pins.
- * This function must be called before \ref RAIL_BLE_ConfigAox and
- * \ref RAIL_BLE_InitCte, else a \ref RAIL_STATUS_INVALID_CALL is returned.
+ * This function must be called before calls to \ref RAIL_BLE_InitCte
+ * and \ref RAIL_BLE_ConfigAox, and before configuring the BLE PHY,
+ * else a \ref RAIL_STATUS_INVALID_CALL is returned.
  *
  * If user configures more pins, i.e., antCount in
  * \ref RAIL_BLE_AoxAntennaConfig_t, than allowed
@@ -620,6 +763,10 @@ RAIL_Status_t RAIL_BLE_InitCte(RAIL_Handle_t railHandle);
  * If user configures lesser than or equal to number of pins allowed by
  * \ref RAIL_BLE_AOX_ANTENNA_PIN_COUNT, then the requested number of pins
  * are configured and \ref RAIL_STATUS_NO_ERROR is returned.
+ *
+ * If AoX antenna switching is inactive, non-AoX transmits and receives
+ * will occur on the first antenna specified by the antenna pattern or
+ * on the default antenna if no antenna pattern is provided.
  *
  * @param[in] railHandle A RAIL instance handle.
  * @param[in] antennaConfig structure to hold the set of ports and pins to

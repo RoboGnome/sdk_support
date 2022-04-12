@@ -36,6 +36,10 @@
 
 #include "rail_util_ieee802154/sl_rail_util_ieee802154_stack_event.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @name PTA Configuration Definitions
  *
  * The following are used to aid in the abstraction with Packet
@@ -259,6 +263,23 @@ bool sl_rail_util_coex_get_radio_holdoff(void);
 
 // Enable/disable Radio Hold-Off
 sl_status_t sl_rail_util_coex_set_radio_holdoff(bool enabled);
+
+// Tells whether 15.4 coex signal identifier is enabled
+bool sl_rail_util_is_coex_signal_identifier_enabled(void);
+
+// ieee802.15.4 coexistence event callback
+void sli_rail_util_ieee802154_coex_on_event(COEX_Events_t events);
+
+// Tells whether 15.4 coex signal identifier is enabled
+bool sl_rail_util_is_coex_signal_identifier_enabled(void);
+
+// ieee802.15.4 coexistence event filter
+extern COEX_Events_t sli_rail_util_ieee802154_coex_event_filter;
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif //__COEXISTENCE_802154_H__
 
 /**@} END micro group

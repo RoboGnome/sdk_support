@@ -184,6 +184,33 @@ PACKSTRUCT( struct sl_btmesh_cmd_node_set_adv_phy_s
 typedef struct sl_btmesh_cmd_node_set_adv_phy_s sl_btmesh_cmd_node_set_adv_phy_t;
 
 
+PACKSTRUCT( struct sl_btmesh_cmd_node_set_unprov_beaconing_adv_interval_s
+{
+    uint16_t            adv_interval_min;
+    uint16_t            adv_interval_max;
+});
+
+typedef struct sl_btmesh_cmd_node_set_unprov_beaconing_adv_interval_s sl_btmesh_cmd_node_set_unprov_beaconing_adv_interval_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_node_set_proxy_service_adv_interval_s
+{
+    uint16_t            adv_interval_min;
+    uint16_t            adv_interval_max;
+});
+
+typedef struct sl_btmesh_cmd_node_set_proxy_service_adv_interval_s sl_btmesh_cmd_node_set_proxy_service_adv_interval_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_node_set_provisioning_service_adv_interval_s
+{
+    uint16_t            adv_interval_min;
+    uint16_t            adv_interval_max;
+});
+
+typedef struct sl_btmesh_cmd_node_set_provisioning_service_adv_interval_s sl_btmesh_cmd_node_set_provisioning_service_adv_interval_t;
+
+
 
 PACKSTRUCT( struct sl_btmesh_cmd_prov_create_provisioning_session_s
 {
@@ -267,6 +294,7 @@ typedef struct sl_btmesh_cmd_prov_create_appkey_s sl_btmesh_cmd_prov_create_appk
 
 PACKSTRUCT( struct sl_btmesh_cmd_prov_send_oob_pkey_response_s
 {
+    uuid_128            uuid;
     uint8array          pkey;
 });
 
@@ -275,6 +303,7 @@ typedef struct sl_btmesh_cmd_prov_send_oob_pkey_response_s sl_btmesh_cmd_prov_se
 
 PACKSTRUCT( struct sl_btmesh_cmd_prov_send_oob_auth_response_s
 {
+    uuid_128            uuid;
     uint8array          data;
 });
 
@@ -570,6 +599,38 @@ PACKSTRUCT( struct sl_btmesh_cmd_vendor_model_deinit_s
 });
 
 typedef struct sl_btmesh_cmd_vendor_model_deinit_s sl_btmesh_cmd_vendor_model_deinit_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_vendor_model_send_tracked_s
+{
+    uint16_t            destination_address;
+    int8_t              va_index;
+    uint16_t            appkey_index;
+    uint16_t            elem_index;
+    uint16_t            vendor_id;
+    uint16_t            model_id;
+    uint8_t             nonrelayed;
+    uint8_t             segment;
+    uint8_t             opcode;
+    uint8_t             final;
+    uint8array          payload;
+});
+
+typedef struct sl_btmesh_cmd_vendor_model_send_tracked_s sl_btmesh_cmd_vendor_model_send_tracked_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_vendor_model_set_publication_tracked_s
+{
+    uint16_t            elem_index;
+    uint16_t            vendor_id;
+    uint16_t            model_id;
+    uint8_t             segment;
+    uint8_t             opcode;
+    uint8_t             final;
+    uint8array          payload;
+});
+
+typedef struct sl_btmesh_cmd_vendor_model_set_publication_tracked_s sl_btmesh_cmd_vendor_model_set_publication_tracked_t;
 
 
 
@@ -1145,6 +1206,66 @@ PACKSTRUCT( struct sl_btmesh_cmd_test_set_replay_protection_list_diagnostics_s
 });
 
 typedef struct sl_btmesh_cmd_test_set_replay_protection_list_diagnostics_s sl_btmesh_cmd_test_set_replay_protection_list_diagnostics_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_get_model_option_s
+{
+    uint16_t            elem_index;
+    uint16_t            vendor_id;
+    uint16_t            model_id;
+    uint8_t             option;
+});
+
+typedef struct sl_btmesh_cmd_test_get_model_option_s sl_btmesh_cmd_test_get_model_option_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_set_default_ttl_s
+{
+    uint8_t             set_value;
+});
+
+typedef struct sl_btmesh_cmd_test_set_default_ttl_s sl_btmesh_cmd_test_set_default_ttl_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_set_gatt_proxy_s
+{
+    uint8_t             set_value;
+});
+
+typedef struct sl_btmesh_cmd_test_set_gatt_proxy_s sl_btmesh_cmd_test_set_gatt_proxy_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_get_identity_s
+{
+    uint16_t            get_netkey_index;
+});
+
+typedef struct sl_btmesh_cmd_test_get_identity_s sl_btmesh_cmd_test_get_identity_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_set_identity_s
+{
+    uint16_t            set_netkey_index;
+    uint8_t             set_value;
+});
+
+typedef struct sl_btmesh_cmd_test_set_identity_s sl_btmesh_cmd_test_set_identity_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_set_friend_s
+{
+    uint8_t             set_value;
+});
+
+typedef struct sl_btmesh_cmd_test_set_friend_s sl_btmesh_cmd_test_set_friend_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_test_set_beacon_s
+{
+    uint8_t             set_value;
+});
+
+typedef struct sl_btmesh_cmd_test_set_beacon_s sl_btmesh_cmd_test_set_beacon_t;
 
 
 
@@ -2425,6 +2546,24 @@ PACKSTRUCT( struct sl_btmesh_cmd_time_server_get_datetime_s
 typedef struct sl_btmesh_cmd_time_server_get_datetime_s sl_btmesh_cmd_time_server_get_datetime_t;
 
 
+PACKSTRUCT( struct sl_btmesh_cmd_time_server_publish_s
+{
+    uint16_t            elem_index;
+});
+
+typedef struct sl_btmesh_cmd_time_server_publish_s sl_btmesh_cmd_time_server_publish_t;
+
+
+PACKSTRUCT( struct sl_btmesh_cmd_time_server_status_s
+{
+    uint16_t            destination_address;
+    uint16_t            elem_index;
+    uint16_t            appkey_index;
+});
+
+typedef struct sl_btmesh_cmd_time_server_status_s sl_btmesh_cmd_time_server_status_t;
+
+
 
 PACKSTRUCT( struct sl_btmesh_cmd_time_client_init_s
 {
@@ -2542,6 +2681,14 @@ PACKSTRUCT( struct sl_btmesh_rsp_node_init_s
 });
 
 typedef struct sl_btmesh_rsp_node_init_s sl_btmesh_rsp_node_init_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_node_set_exportable_keys_s
+{
+    uint16_t            result;
+});
+
+typedef struct sl_btmesh_rsp_node_set_exportable_keys_s sl_btmesh_rsp_node_set_exportable_keys_t;
 
 
 PACKSTRUCT( struct sl_btmesh_rsp_node_start_unprov_beaconing_s
@@ -2833,6 +2980,30 @@ PACKSTRUCT( struct sl_btmesh_rsp_node_get_adv_phy_s
 });
 
 typedef struct sl_btmesh_rsp_node_get_adv_phy_s sl_btmesh_rsp_node_get_adv_phy_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_node_set_unprov_beaconing_adv_interval_s
+{
+    uint16_t            result;
+});
+
+typedef struct sl_btmesh_rsp_node_set_unprov_beaconing_adv_interval_s sl_btmesh_rsp_node_set_unprov_beaconing_adv_interval_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_node_set_proxy_service_adv_interval_s
+{
+    uint16_t            result;
+});
+
+typedef struct sl_btmesh_rsp_node_set_proxy_service_adv_interval_s sl_btmesh_rsp_node_set_proxy_service_adv_interval_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_node_set_provisioning_service_adv_interval_s
+{
+    uint16_t            result;
+});
+
+typedef struct sl_btmesh_rsp_node_set_provisioning_service_adv_interval_s sl_btmesh_rsp_node_set_provisioning_service_adv_interval_t;
 
 
 PACKSTRUCT( struct sl_btmesh_rsp_prov_init_s
@@ -3196,6 +3367,24 @@ PACKSTRUCT( struct sl_btmesh_rsp_vendor_model_deinit_s
 });
 
 typedef struct sl_btmesh_rsp_vendor_model_deinit_s sl_btmesh_rsp_vendor_model_deinit_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_vendor_model_send_tracked_s
+{
+    uint16_t            result;
+    uint16_t            handle;
+});
+
+typedef struct sl_btmesh_rsp_vendor_model_send_tracked_s sl_btmesh_rsp_vendor_model_send_tracked_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_vendor_model_set_publication_tracked_s
+{
+    uint16_t            result;
+    uint16_t            handle;
+});
+
+typedef struct sl_btmesh_rsp_vendor_model_set_publication_tracked_s sl_btmesh_rsp_vendor_model_set_publication_tracked_t;
 
 
 PACKSTRUCT( struct sl_btmesh_rsp_health_client_get_s
@@ -3905,6 +4094,107 @@ PACKSTRUCT( struct sl_btmesh_rsp_test_set_replay_protection_list_diagnostics_s
 });
 
 typedef struct sl_btmesh_rsp_test_set_replay_protection_list_diagnostics_s sl_btmesh_rsp_test_set_replay_protection_list_diagnostics_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_get_model_option_s
+{
+    uint16_t            result;
+    uint32_t            value;
+});
+
+typedef struct sl_btmesh_rsp_test_get_model_option_s sl_btmesh_rsp_test_get_model_option_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_get_default_ttl_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_get_default_ttl_s sl_btmesh_rsp_test_get_default_ttl_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_set_default_ttl_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_set_default_ttl_s sl_btmesh_rsp_test_set_default_ttl_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_get_gatt_proxy_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_get_gatt_proxy_s sl_btmesh_rsp_test_get_gatt_proxy_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_set_gatt_proxy_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_set_gatt_proxy_s sl_btmesh_rsp_test_set_gatt_proxy_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_get_identity_s
+{
+    uint16_t            result;
+    uint16_t            netkey_index;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_get_identity_s sl_btmesh_rsp_test_get_identity_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_set_identity_s
+{
+    uint16_t            result;
+    uint16_t            netkey_index;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_set_identity_s sl_btmesh_rsp_test_set_identity_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_get_friend_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_get_friend_s sl_btmesh_rsp_test_get_friend_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_set_friend_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_set_friend_s sl_btmesh_rsp_test_set_friend_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_get_beacon_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_get_beacon_s sl_btmesh_rsp_test_get_beacon_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_test_set_beacon_s
+{
+    uint16_t            result;
+    uint8_t             value;
+});
+
+typedef struct sl_btmesh_rsp_test_set_beacon_s sl_btmesh_rsp_test_set_beacon_t;
 
 
 PACKSTRUCT( struct sl_btmesh_rsp_lpn_init_s
@@ -4991,11 +5281,27 @@ PACKSTRUCT( struct sl_btmesh_rsp_time_server_get_datetime_s
     uint8_t             min;
     uint8_t             sec;
     uint16_t            ms;
-    uint16_t            timezone;
+    int16_t             timezone;
     uint8_t             day_of_week;
 });
 
 typedef struct sl_btmesh_rsp_time_server_get_datetime_s sl_btmesh_rsp_time_server_get_datetime_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_time_server_publish_s
+{
+    uint16_t            result;
+});
+
+typedef struct sl_btmesh_rsp_time_server_publish_s sl_btmesh_rsp_time_server_publish_t;
+
+
+PACKSTRUCT( struct sl_btmesh_rsp_time_server_status_s
+{
+    uint16_t            result;
+});
+
+typedef struct sl_btmesh_rsp_time_server_status_s sl_btmesh_rsp_time_server_status_t;
 
 
 PACKSTRUCT( struct sl_btmesh_rsp_time_client_init_s
@@ -5117,6 +5423,9 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_cmd_node_set_model_option_t                        cmd_node_set_model_option;
     sl_btmesh_cmd_node_get_local_dcd_t                           cmd_node_get_local_dcd;
     sl_btmesh_cmd_node_set_adv_phy_t                             cmd_node_set_adv_phy;
+    sl_btmesh_cmd_node_set_unprov_beaconing_adv_interval_t       cmd_node_set_unprov_beaconing_adv_interval;
+    sl_btmesh_cmd_node_set_proxy_service_adv_interval_t          cmd_node_set_proxy_service_adv_interval;
+    sl_btmesh_cmd_node_set_provisioning_service_adv_interval_t   cmd_node_set_provisioning_service_adv_interval;
     sl_btmesh_cmd_prov_create_provisioning_session_t             cmd_prov_create_provisioning_session;
     sl_btmesh_cmd_prov_set_provisioning_suspend_event_t          cmd_prov_set_provisioning_suspend_event;
     sl_btmesh_cmd_prov_provision_adv_device_t                    cmd_prov_provision_adv_device;
@@ -5157,6 +5466,8 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_cmd_vendor_model_publish_t                         cmd_vendor_model_publish;
     sl_btmesh_cmd_vendor_model_init_t                            cmd_vendor_model_init;
     sl_btmesh_cmd_vendor_model_deinit_t                          cmd_vendor_model_deinit;
+    sl_btmesh_cmd_vendor_model_send_tracked_t                    cmd_vendor_model_send_tracked;
+    sl_btmesh_cmd_vendor_model_set_publication_tracked_t         cmd_vendor_model_set_publication_tracked;
     sl_btmesh_cmd_health_client_get_t                            cmd_health_client_get;
     sl_btmesh_cmd_health_client_clear_t                          cmd_health_client_clear;
     sl_btmesh_cmd_health_client_test_t                           cmd_health_client_test;
@@ -5210,6 +5521,13 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_cmd_test_get_replay_protection_list_entry_t        cmd_test_get_replay_protection_list_entry;
     sl_btmesh_cmd_test_clear_replay_protection_list_entry_t      cmd_test_clear_replay_protection_list_entry;
     sl_btmesh_cmd_test_set_replay_protection_list_diagnostics_t  cmd_test_set_replay_protection_list_diagnostics;
+    sl_btmesh_cmd_test_get_model_option_t                        cmd_test_get_model_option;
+    sl_btmesh_cmd_test_set_default_ttl_t                         cmd_test_set_default_ttl;
+    sl_btmesh_cmd_test_set_gatt_proxy_t                          cmd_test_set_gatt_proxy;
+    sl_btmesh_cmd_test_get_identity_t                            cmd_test_get_identity;
+    sl_btmesh_cmd_test_set_identity_t                            cmd_test_set_identity;
+    sl_btmesh_cmd_test_set_friend_t                              cmd_test_set_friend;
+    sl_btmesh_cmd_test_set_beacon_t                              cmd_test_set_beacon;
     sl_btmesh_cmd_lpn_establish_friendship_t                     cmd_lpn_establish_friendship;
     sl_btmesh_cmd_lpn_poll_t                                     cmd_lpn_poll;
     sl_btmesh_cmd_lpn_terminate_friendship_t                     cmd_lpn_terminate_friendship;
@@ -5328,6 +5646,8 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_cmd_time_server_get_time_role_t                    cmd_time_server_get_time_role;
     sl_btmesh_cmd_time_server_set_time_role_t                    cmd_time_server_set_time_role;
     sl_btmesh_cmd_time_server_get_datetime_t                     cmd_time_server_get_datetime;
+    sl_btmesh_cmd_time_server_publish_t                          cmd_time_server_publish;
+    sl_btmesh_cmd_time_server_status_t                           cmd_time_server_status;
     sl_btmesh_cmd_time_client_init_t                             cmd_time_client_init;
     sl_btmesh_cmd_time_client_deinit_t                           cmd_time_client_deinit;
     sl_btmesh_cmd_time_client_get_time_t                         cmd_time_client_get_time;
@@ -5339,6 +5659,7 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_cmd_time_client_get_time_role_t                    cmd_time_client_get_time_role;
     sl_btmesh_cmd_time_client_set_time_role_t                    cmd_time_client_set_time_role;
     sl_btmesh_rsp_node_init_t                                    rsp_node_init;
+    sl_btmesh_rsp_node_set_exportable_keys_t                     rsp_node_set_exportable_keys;
     sl_btmesh_rsp_node_start_unprov_beaconing_t                  rsp_node_start_unprov_beaconing;
     sl_btmesh_rsp_node_stop_unprov_beaconing_t                   rsp_node_stop_unprov_beaconing;
     sl_btmesh_rsp_node_get_rssi_t                                rsp_node_get_rssi;
@@ -5373,6 +5694,9 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_rsp_node_power_off_t                               rsp_node_power_off;
     sl_btmesh_rsp_node_set_adv_phy_t                             rsp_node_set_adv_phy;
     sl_btmesh_rsp_node_get_adv_phy_t                             rsp_node_get_adv_phy;
+    sl_btmesh_rsp_node_set_unprov_beaconing_adv_interval_t       rsp_node_set_unprov_beaconing_adv_interval;
+    sl_btmesh_rsp_node_set_proxy_service_adv_interval_t          rsp_node_set_proxy_service_adv_interval;
+    sl_btmesh_rsp_node_set_provisioning_service_adv_interval_t   rsp_node_set_provisioning_service_adv_interval;
     sl_btmesh_rsp_prov_init_t                                    rsp_prov_init;
     sl_btmesh_rsp_prov_scan_unprov_beacons_t                     rsp_prov_scan_unprov_beacons;
     sl_btmesh_rsp_prov_create_provisioning_session_t             rsp_prov_create_provisioning_session;
@@ -5417,6 +5741,8 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_rsp_vendor_model_publish_t                         rsp_vendor_model_publish;
     sl_btmesh_rsp_vendor_model_init_t                            rsp_vendor_model_init;
     sl_btmesh_rsp_vendor_model_deinit_t                          rsp_vendor_model_deinit;
+    sl_btmesh_rsp_vendor_model_send_tracked_t                    rsp_vendor_model_send_tracked;
+    sl_btmesh_rsp_vendor_model_set_publication_tracked_t         rsp_vendor_model_set_publication_tracked;
     sl_btmesh_rsp_health_client_get_t                            rsp_health_client_get;
     sl_btmesh_rsp_health_client_clear_t                          rsp_health_client_clear;
     sl_btmesh_rsp_health_client_test_t                           rsp_health_client_test;
@@ -5502,6 +5828,17 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_rsp_test_get_replay_protection_list_entry_t        rsp_test_get_replay_protection_list_entry;
     sl_btmesh_rsp_test_clear_replay_protection_list_entry_t      rsp_test_clear_replay_protection_list_entry;
     sl_btmesh_rsp_test_set_replay_protection_list_diagnostics_t  rsp_test_set_replay_protection_list_diagnostics;
+    sl_btmesh_rsp_test_get_model_option_t                        rsp_test_get_model_option;
+    sl_btmesh_rsp_test_get_default_ttl_t                         rsp_test_get_default_ttl;
+    sl_btmesh_rsp_test_set_default_ttl_t                         rsp_test_set_default_ttl;
+    sl_btmesh_rsp_test_get_gatt_proxy_t                          rsp_test_get_gatt_proxy;
+    sl_btmesh_rsp_test_set_gatt_proxy_t                          rsp_test_set_gatt_proxy;
+    sl_btmesh_rsp_test_get_identity_t                            rsp_test_get_identity;
+    sl_btmesh_rsp_test_set_identity_t                            rsp_test_set_identity;
+    sl_btmesh_rsp_test_get_friend_t                              rsp_test_get_friend;
+    sl_btmesh_rsp_test_set_friend_t                              rsp_test_set_friend;
+    sl_btmesh_rsp_test_get_beacon_t                              rsp_test_get_beacon;
+    sl_btmesh_rsp_test_set_beacon_t                              rsp_test_set_beacon;
     sl_btmesh_rsp_lpn_init_t                                     rsp_lpn_init;
     sl_btmesh_rsp_lpn_deinit_t                                   rsp_lpn_deinit;
     sl_btmesh_rsp_lpn_establish_friendship_t                     rsp_lpn_establish_friendship;
@@ -5628,6 +5965,8 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_rsp_time_server_get_time_role_t                    rsp_time_server_get_time_role;
     sl_btmesh_rsp_time_server_set_time_role_t                    rsp_time_server_set_time_role;
     sl_btmesh_rsp_time_server_get_datetime_t                     rsp_time_server_get_datetime;
+    sl_btmesh_rsp_time_server_publish_t                          rsp_time_server_publish;
+    sl_btmesh_rsp_time_server_status_t                           rsp_time_server_status;
     sl_btmesh_rsp_time_client_init_t                             rsp_time_client_init;
     sl_btmesh_rsp_time_client_deinit_t                           rsp_time_client_deinit;
     sl_btmesh_rsp_time_client_get_time_t                         rsp_time_client_get_time;
@@ -5660,6 +5999,7 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_evt_node_beacon_received_t                         evt_node_beacon_received;
     sl_btmesh_evt_node_local_dcd_data_t                          evt_node_local_dcd_data;
     sl_btmesh_evt_node_local_dcd_data_end_t                      evt_node_local_dcd_data_end;
+    sl_btmesh_evt_node_start_received_t                          evt_node_start_received;
     sl_btmesh_evt_prov_initialized_t                             evt_prov_initialized;
     sl_btmesh_evt_prov_provisioning_suspended_t                  evt_prov_provisioning_suspended;
     sl_btmesh_evt_prov_capabilities_t                            evt_prov_capabilities;
@@ -5677,10 +6017,12 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_evt_prov_add_ddb_entry_complete_t                  evt_prov_add_ddb_entry_complete;
     sl_btmesh_evt_prov_delete_ddb_entry_complete_t               evt_prov_delete_ddb_entry_complete;
     sl_btmesh_evt_prov_initialization_failed_t                   evt_prov_initialization_failed;
+    sl_btmesh_evt_prov_start_sent_t                              evt_prov_start_sent;
     sl_btmesh_evt_proxy_connected_t                              evt_proxy_connected;
     sl_btmesh_evt_proxy_disconnected_t                           evt_proxy_disconnected;
     sl_btmesh_evt_proxy_filter_status_t                          evt_proxy_filter_status;
     sl_btmesh_evt_vendor_model_receive_t                         evt_vendor_model_receive;
+    sl_btmesh_evt_vendor_model_send_complete_t                   evt_vendor_model_send_complete;
     sl_btmesh_evt_health_client_server_status_t                  evt_health_client_server_status;
     sl_btmesh_evt_health_client_server_status_period_t           evt_health_client_server_status_period;
     sl_btmesh_evt_health_client_server_status_attention_t        evt_health_client_server_status_attention;
@@ -5771,6 +6113,8 @@ PACKSTRUCT( struct sl_btmesh_packet {
     sl_btmesh_evt_scheduler_client_status_t                      evt_scheduler_client_status;
     sl_btmesh_evt_scheduler_client_action_status_t               evt_scheduler_client_action_status;
     sl_btmesh_evt_scheduler_server_action_changed_t              evt_scheduler_server_action_changed;
+    sl_btmesh_evt_scheduler_server_scene_changed_t               evt_scheduler_server_scene_changed;
+    sl_btmesh_evt_scheduler_server_action_triggered_t            evt_scheduler_server_action_triggered;
     sl_btmesh_evt_time_server_time_updated_t                     evt_time_server_time_updated;
     sl_btmesh_evt_time_server_time_zone_offset_updated_t         evt_time_server_time_zone_offset_updated;
     sl_btmesh_evt_time_server_tai_utc_delta_updated_t            evt_time_server_tai_utc_delta_updated;

@@ -4,7 +4,7 @@
  *        for MGM240PA32VNA
  ******************************************************************************
  * # License
- * <b>Copyright 2021 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2022 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -75,7 +75,6 @@ typedef enum IRQn{
   EUSART0_TX_IRQn        = 12, /*!< 12 EFR32 EUSART0_TX Interrupt */
   EUSART1_RX_IRQn        = 13, /*!< 13 EFR32 EUSART1_RX Interrupt */
   EUSART1_TX_IRQn        = 14, /*!< 14 EFR32 EUSART1_TX Interrupt */
-  MVP_IRQn               = 15, /*!< 15 EFR32 MVP Interrupt */
   ICACHE0_IRQn           = 16, /*!< 16 EFR32 ICACHE0 Interrupt */
   BURTC_IRQn             = 17, /*!< 17 EFR32 BURTC Interrupt */
   LETIMER0_IRQn          = 18, /*!< 18 EFR32 LETIMER0 Interrupt */
@@ -121,6 +120,8 @@ typedef enum IRQn{
   SW3_IRQn               = 58, /*!< 58 EFR32 SW3 Interrupt */
   KERNEL0_IRQn           = 59, /*!< 59 EFR32 KERNEL0 Interrupt */
   KERNEL1_IRQn           = 60, /*!< 60 EFR32 KERNEL1 Interrupt */
+  M33CTI0_IRQn           = 61, /*!< 61 EFR32 M33CTI0 Interrupt */
+  M33CTI1_IRQn           = 62, /*!< 62 EFR32 M33CTI1 Interrupt */
   FPUEXH_IRQn            = 63, /*!< 63 EFR32 FPUEXH Interrupt */
   SETAMPERHOST_IRQn      = 64, /*!< 64 EFR32 SETAMPERHOST Interrupt */
   SEMBRX_IRQn            = 65, /*!< 65 EFR32 SEMBRX Interrupt */
@@ -315,12 +316,12 @@ typedef enum IRQn{
 #define GPIO_TRACECLK_PIN                                 4U            /**< Pin of TRACECLK.*/
 #define GPIO_TRACEDATA0_PORT                              GPIO_PA_INDEX /**< Port of TRACEDATA0.*/
 #define GPIO_TRACEDATA0_PIN                               3U            /**< Pin of TRACEDATA0.*/
-#define GPIO_DBG_TRACEDATA1_PORT                          GPIO_PA_INDEX /**< Port of DBG_TRACEDATA1.*/
-#define GPIO_DBG_TRACEDATA1_PIN                           5U            /**< Pin of DBG_TRACEDATA1.*/
-#define GPIO_DBG_TRACEDATA2_PORT                          GPIO_PA_INDEX /**< Port of DBG_TRACEDATA2.*/
-#define GPIO_DBG_TRACEDATA2_PIN                           6U            /**< Pin of DBG_TRACEDATA2.*/
-#define GPIO_DBG_TRACEDATA3_PORT                          GPIO_PA_INDEX /**< Port of DBG_TRACEDATA3.*/
-#define GPIO_DBG_TRACEDATA3_PIN                           7U            /**< Pin of DBG_TRACEDATA3.*/
+#define GPIO_TRACEDATA1_PORT                              GPIO_PA_INDEX /**< Port of TRACEDATA1.*/
+#define GPIO_TRACEDATA1_PIN                               5U            /**< Pin of TRACEDATA1.*/
+#define GPIO_TRACEDATA2_PORT                              GPIO_PA_INDEX /**< Port of TRACEDATA2.*/
+#define GPIO_TRACEDATA2_PIN                               6U            /**< Pin of TRACEDATA2.*/
+#define GPIO_TRACEDATA3_PORT                              GPIO_PA_INDEX /**< Port of TRACEDATA3.*/
+#define GPIO_TRACEDATA3_PIN                               7U            /**< Pin of TRACEDATA3.*/
 #define GPIO_EFP_INT_PORT                                 GPIO_PC_INDEX /**< Port of EFP_INT.*/
 #define GPIO_EFP_INT_PIN                                  5U            /**< Pin of EFP_INT.*/
 #define GPIO_EFP_TX_SCL_PORT                              GPIO_PC_INDEX /**< Port of EFP_TX_SCL.*/
@@ -435,8 +436,6 @@ typedef enum IRQn{
 #define MODEM_COUNT                                       1 /** 1 MODEMs available  */
 #define MSC_PRESENT                                         /** MSC is available in this part */
 #define MSC_COUNT                                         1 /** 1 MSCs available  */
-#define MVP_PRESENT                                         /** MVP is available in this part */
-#define MVP_COUNT                                         1 /** 1 MVPs available  */
 #define PCNT_PRESENT                                        /** PCNT is available in this part */
 #define PCNT_COUNT                                        1 /** 1 PCNTs available  */
 #define PROTIMER_PRESENT                                    /** PROTIMER is available in this part */
@@ -530,7 +529,6 @@ typedef enum IRQn{
 #include "mgm24_hfxo.h"
 #include "mgm24_wdog.h"
 #include "mgm24_semailbox.h"
-#include "mgm24_mvp.h"
 #include "mgm24_frc.h"
 #include "mgm24_agc.h"
 #include "mgm24_rfcrc.h"
@@ -606,7 +604,6 @@ typedef enum IRQn{
 #define WDOG1_BASE                (0x4B008000UL) /* WDOG1 base address */
 #define EUSART0_BASE              (0x4B010000UL) /* EUSART0 base address */
 #define SEMAILBOX_HOST_BASE       (0x4C000000UL) /* SEMAILBOX_HOST base address */
-#define MVP_BASE                  (0x4D000000UL) /* MVP base address */
 #define SCRATCHPAD_NS_BASE        (0x50000000UL) /* SCRATCHPAD_NS base address */
 #define EMU_NS_BASE               (0x50004000UL) /* EMU_NS base address */
 #define CMU_NS_BASE               (0x50008000UL) /* CMU_NS base address */
@@ -658,7 +655,6 @@ typedef enum IRQn{
 #define WDOG1_NS_BASE             (0x5B008000UL) /* WDOG1_NS base address */
 #define EUSART0_NS_BASE           (0x5B010000UL) /* EUSART0_NS base address */
 #define SEMAILBOX_NS_HOST_BASE    (0x5C000000UL) /* SEMAILBOX_NS_HOST base address */
-#define MVP_NS_BASE               (0x5D000000UL) /* MVP_NS base address */
 #define FRC_BASE                  (0xA8004000UL) /* FRC base address */
 #define AGC_BASE                  (0xA800C000UL) /* AGC base address */
 #define RFCRC_BASE                (0xA8010000UL) /* RFCRC base address */
@@ -795,8 +791,6 @@ typedef enum IRQn{
 #define EUSART0              ((EUSART_TypeDef *) EUSART0_BASE)                   /**< EUSART0_S base pointer */
 #define SEMAILBOX_S_HOST     ((SEMAILBOX_HOST_TypeDef *) SEMAILBOX_HOST_BASE)    /**< SEMAILBOX_S_HOST base pointer */
 #define SEMAILBOX_HOST       ((SEMAILBOX_HOST_TypeDef *) SEMAILBOX_HOST_BASE)    /**< SEMAILBOX_S_HOST base pointer */
-#define MVP_S                ((MVP_TypeDef *) MVP_BASE)                          /**< MVP_S base pointer */
-#define MVP                  ((MVP_TypeDef *) MVP_BASE)                          /**< MVP_S base pointer */
 #define SCRATCHPAD_NS        ((SCRATCHPAD_TypeDef *) SCRATCHPAD_NS_BASE)         /**< SCRATCHPAD_NS base pointer */
 #define EMU_NS               ((EMU_TypeDef *) EMU_NS_BASE)                       /**< EMU_NS base pointer */
 #define CMU_NS               ((CMU_TypeDef *) CMU_NS_BASE)                       /**< CMU_NS base pointer */
@@ -848,7 +842,6 @@ typedef enum IRQn{
 #define WDOG1_NS             ((WDOG_TypeDef *) WDOG1_NS_BASE)                    /**< WDOG1_NS base pointer */
 #define EUSART0_NS           ((EUSART_TypeDef *) EUSART0_NS_BASE)                /**< EUSART0_NS base pointer */
 #define SEMAILBOX_NS_HOST    ((SEMAILBOX_HOST_TypeDef *) SEMAILBOX_NS_HOST_BASE) /**< SEMAILBOX_NS_HOST base pointer */
-#define MVP_NS               ((MVP_TypeDef *) MVP_NS_BASE)                       /**< MVP_NS base pointer */
 #define FRC_S                ((FRC_TypeDef *) FRC_BASE)                          /**< FRC_S base pointer */
 #define FRC                  ((FRC_TypeDef *) FRC_BASE)                          /**< FRC_S base pointer */
 #define AGC_S                ((AGC_TypeDef *) AGC_BASE)                          /**< AGC_S base pointer */
@@ -909,24 +902,24 @@ typedef enum IRQn{
 #define DMEM_BANK13_SIZE                        0x4000UL    /**> Bank13 size */
 #define DMEM_BANK14_SIZE                        0x4000UL    /**> Bank14 size */
 #define DMEM_BANK15_SIZE                        0x4000UL    /**> Bank15 size */
-#define DMEM_BANK16_SIZE                        0x2000UL    /**> Bank16 size */
-#define DMEM_BANK17_SIZE                        0x2000UL    /**> Bank17 size */
-#define DMEM_BANK18_SIZE                        0x2000UL    /**> Bank18 size */
-#define DMEM_BANK19_SIZE                        0x2000UL    /**> Bank19 size */
+#define DMEM_BANK16_SIZE                        0x0UL       /**> Bank16 size */
+#define DMEM_BANK17_SIZE                        0x0UL       /**> Bank17 size */
+#define DMEM_BANK18_SIZE                        0x0UL       /**> Bank18 size */
+#define DMEM_BANK19_SIZE                        0x0UL       /**> Bank19 size */
 #define DMEM_BANK1_SIZE                         0x4000UL    /**> Bank1 size */
-#define DMEM_BANK20_SIZE                        0x2000UL    /**> Bank20 size */
-#define DMEM_BANK21_SIZE                        0x2000UL    /**> Bank21 size */
-#define DMEM_BANK22_SIZE                        0x2000UL    /**> Bank22 size */
-#define DMEM_BANK23_SIZE                        0x2000UL    /**> Bank23 size */
-#define DMEM_BANK24_SIZE                        0x2000UL    /**> Bank24 size */
-#define DMEM_BANK25_SIZE                        0x2000UL    /**> Bank25 size */
-#define DMEM_BANK26_SIZE                        0x2000UL    /**> Bank26 size */
-#define DMEM_BANK27_SIZE                        0x2000UL    /**> Bank27 size */
-#define DMEM_BANK28_SIZE                        0x2000UL    /**> Bank28 size */
-#define DMEM_BANK29_SIZE                        0x2000UL    /**> Bank29 size */
+#define DMEM_BANK20_SIZE                        0x0UL       /**> Bank20 size */
+#define DMEM_BANK21_SIZE                        0x0UL       /**> Bank21 size */
+#define DMEM_BANK22_SIZE                        0x0UL       /**> Bank22 size */
+#define DMEM_BANK23_SIZE                        0x0UL       /**> Bank23 size */
+#define DMEM_BANK24_SIZE                        0x0UL       /**> Bank24 size */
+#define DMEM_BANK25_SIZE                        0x0UL       /**> Bank25 size */
+#define DMEM_BANK26_SIZE                        0x0UL       /**> Bank26 size */
+#define DMEM_BANK27_SIZE                        0x0UL       /**> Bank27 size */
+#define DMEM_BANK28_SIZE                        0x0UL       /**> Bank28 size */
+#define DMEM_BANK29_SIZE                        0x0UL       /**> Bank29 size */
 #define DMEM_BANK2_SIZE                         0x4000UL    /**> Bank2 size */
-#define DMEM_BANK30_SIZE                        0x2000UL    /**> Bank30 size */
-#define DMEM_BANK31_SIZE                        0x2000UL    /**> Bank31 size */
+#define DMEM_BANK30_SIZE                        0x0UL       /**> Bank30 size */
+#define DMEM_BANK31_SIZE                        0x0UL       /**> Bank31 size */
 #define DMEM_BANK3_SIZE                         0x4000UL    /**> Bank3 size */
 #define DMEM_BANK4_SIZE                         0x4000UL    /**> Bank4 size */
 #define DMEM_BANK5_SIZE                         0x4000UL    /**> Bank5 size */
@@ -935,6 +928,7 @@ typedef enum IRQn{
 #define DMEM_BANK8_SIZE                         0x4000UL    /**> Bank8 size */
 #define DMEM_BANK9_SIZE                         0x4000UL    /**> Bank9 size */
 #define DMEM_ECC_EXCLUDE                        0x0UL       /**> ECC exclude */
+#define DMEM_MEM_SIZE                           0x40000UL   /**> Total memory size */
 #define DMEM_NUM_BANKS                          0x10UL      /**> Number of physical SRAM banks */
 #define DMEM_NUM_PORTS                          0x4UL       /**> Number of AHB slave ports */
 #define DMEM_NUM_PORTS_IS_2                     0x0UL       /**> Boolean indicating if NUM_PORTS=2 */
@@ -1191,6 +1185,7 @@ typedef enum IRQn{
 #define RDMEM_FRC_RAM_BWE_WIDTH                 0x27UL      /**> FRCRAM BWE width */
 #define RDMEM_FRC_RAM_DATA_WIDTH                0x27UL      /**> FRC_RAM_DATA_WIDTH */
 #define RDMEM_FRC_RAM_ECC_EN                    0x1UL       /**> FRC RAM ECCEN */
+#define RDMEM_FRC_RAM_TOTAL_SIZE                0x1000UL    /**> FRC_RAM_TOTAL_SIZE */
 #define RDMEM_SEQ_BANK0_SIZE                    0x2000UL    /**> SEQ_RAM_BANK0_SIZE */
 #define RDMEM_SEQ_BANK1_SIZE                    0x2000UL    /**> SEQ_RAM_BANK1_SIZE */
 #define RDMEM_SEQ_BANK2_SIZE                    0x0UL       /**> SEQ_RAM_BANK2_SIZE */
@@ -1206,6 +1201,7 @@ typedef enum IRQn{
 #define RDMEM_SEQ_RAM_BWE_WIDTH                 0x27UL      /**> SEQRAM BWE width */
 #define RDMEM_SEQ_RAM_DATA_WIDTH                0x27UL      /**> SEQ_RAM_DATA_WIDTH */
 #define RDMEM_SEQ_RAM_ECC_EN                    0x1UL       /**> SEQ RAM ECCEN */
+#define RDMEM_SEQ_RAM_TOTAL_SIZE                0x4000UL    /**> SEQ_RAM_TOTAL_SIZE */
 #define FRC_DEMOD_FILT_WIDTH                    0x13UL      /**> New Param */
 #define FRC_FCD_NUM                             0x4UL       /**> None */
 #define FRC_INTELEMENTS                         0x10UL      /**> None */

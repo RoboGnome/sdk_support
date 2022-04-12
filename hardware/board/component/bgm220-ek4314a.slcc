@@ -10,8 +10,13 @@
 - provides:
   - name: hardware_kit
   - name: hardware_kit_ek
+- define:
+  - name: SL_KIT_NAME
+    value: '"BGM220-EK4314A"'
+  - name: SL_KIT_REV
+    value: '"A03"'
 - tag:
   - kit:opn:BGM220-EK4314A
   - kit:pn:EK4314
   - kit:variant:A
-  - kit:revision:A02
+  - kit:revision:A03

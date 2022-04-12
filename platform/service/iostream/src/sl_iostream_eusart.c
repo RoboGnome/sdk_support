@@ -81,6 +81,10 @@ sl_slist_node_t *eusart_stream_list = NULL;
 static sl_status_t eusart_tx(void *context,
                              char c);
 
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT) && !defined(SL_IOSTREAM_UART_FLUSH_TX_BUFFER)
+static void eusart_tx_completed(void *context, bool enable);
+#endif
+
 static void eusart_enable_rx(void *context);
 
 static sl_status_t eusart_deinit(void *context);
@@ -104,6 +108,12 @@ sl_status_t sl_iostream_eusart_init(sl_iostream_uart_t *iostream_uart,
   bool rts = false;
   uint8_t em_req = 1;
 
+  // Set advanced Settings in config init struct
+  if (eusart_config->flow_control != eusartHwFlowControlNone) {
+    advanced_init.hwFlowControl = eusart_config->flow_control;
+  }
+  init->advancedSettings = &advanced_init;
+
   if (eusart_config->enable_high_frequency) {
     em_req = 1;
   } else {
@@ -114,6 +124,11 @@ sl_status_t sl_iostream_eusart_init(sl_iostream_uart_t *iostream_uart,
                                           &eusart_context->context,
                                           uart_config,
                                           eusart_tx,
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT) && !defined(SL_IOSTREAM_UART_FLUSH_TX_BUFFER)
+                                          eusart_tx_completed,
+#else
+                                          NULL,
+#endif
                                           eusart_enable_rx,
                                           eusart_deinit,
                                           em_req,
@@ -150,8 +165,7 @@ sl_status_t sl_iostream_eusart_init(sl_iostream_uart_t *iostream_uart,
 #if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
     CMU_ClockEnable(cmuClock_EM23GRPACLK, true);
     CMU_ClockSelectSet(eusart_config->clock, cmuSelect_EM23GRPACLK);
-#elif defined(_SILICON_LABS_32B_SERIES_2_CONFIG_3) \
-    || defined(_SILICON_LABS_32B_SERIES_2_CONFIG_4)
+#elif (_SILICON_LABS_32B_SERIES_2_CONFIG >= 3)
     CMU_ClockEnable(cmuClock_LFRCO, true);
     CMU_ClockSelectSet(eusart_config->clock, cmuSelect_LFRCO);
 #else
@@ -162,8 +176,7 @@ sl_status_t sl_iostream_eusart_init(sl_iostream_uart_t *iostream_uart,
 #if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
     CMU_ClockEnable(cmuClock_EM01GRPACLK, true);
     CMU_ClockSelectSet(eusart_config->clock, cmuSelect_EM01GRPACLK);
-#elif defined(_SILICON_LABS_32B_SERIES_2_CONFIG_3) \
-    || defined(_SILICON_LABS_32B_SERIES_2_CONFIG_4)
+#elif (_SILICON_LABS_32B_SERIES_2_CONFIG >= 3)
     CMU_ClockSelectSet(cmuClock_EM01GRPCCLK, cmuSelect_HFRCODPLL);
     if (eusart_config->clock == cmuClock_EUSART0) {
       CMU_ClockSelectSet(cmuClock_EUSART0CLK, cmuSelect_EM01GRPCCLK);
@@ -191,10 +204,6 @@ sl_status_t sl_iostream_eusart_init(sl_iostream_uart_t *iostream_uart,
     | (eusart_config->rx_pin << _GPIO_EUSART_RXROUTE_PIN_SHIFT);
 #endif
   // Configure GPIOs for hwflowcontrol
-  if (eusart_config->flow_control != eusartHwFlowControlNone) {
-    advanced_init.hwFlowControl = eusart_config->flow_control;
-    init->advancedSettings = &advanced_init;
-  }
   switch (eusart_config->flow_control) {
     case eusartHwFlowControlNone:
       break;
@@ -282,14 +291,13 @@ void sl_iostream_eusart_irq_handler(void *stream_context)
     }
   }
 
-#if defined(SL_CATALOG_POWER_MANAGER_PRESENT)
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT) && !defined(SL_IOSTREAM_UART_FLUSH_TX_BUFFER)
   if (eusart_context->eusart->IF & EUSART_IF_TXC) {
-    bool idle;
     EUSART_IntClear(eusart_context->eusart, EUSART_IF_TXC);
-    EUSART_IntDisable(eusart_context->eusart, EUSART_IF_TXC);
-    idle = sli_uart_txc(stream_context);
-    if (idle == false) {
-      EUSART_IntEnable(eusart_context->eusart, EUSART_IF_TXC);
+    // Check if the Status register has the TXC flag as well since the flag will clean itself
+    // if other transmissions are queued contrary to the IF flag
+    if ((EUSART_StatusGet(eusart_context->eusart) & _EUSART_STATUS_TXC_MASK) != 0) {
+      sli_uart_txc(stream_context);
     }
   }
 #endif
@@ -309,11 +317,6 @@ static sl_status_t eusart_tx(void *context,
 
   EUSART_Tx(eusart_context->eusart, c);
 
-#if defined(SL_CATALOG_POWER_MANAGER_PRESENT) && !defined(SL_IOSTREAM_UART_FLUSH_TX_BUFFER)
-  // Enable TX interrupts
-  EUSART_IntEnable(eusart_context->eusart, EUSART_IF_TXC);
-#endif
-
 #if defined(SL_IOSTREAM_UART_FLUSH_TX_BUFFER)
 /* Wait until transmit buffer is empty */
   while (!(EUSART_StatusGet(eusart_context->eusart) & EUSART_STATUS_TXFL)) ;
@@ -321,6 +324,25 @@ static sl_status_t eusart_tx(void *context,
 
   return SL_STATUS_OK;
 }
+
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT) && !defined(SL_IOSTREAM_UART_FLUSH_TX_BUFFER)
+/***************************************************************************//**
+ * Enable/Disable EUSART Tx Complete (TXC) Interrupt
+ ******************************************************************************/
+static void eusart_tx_completed(void *context, bool enable)
+{
+  (void)context;
+  (void)enable;
+
+  sl_iostream_eusart_context_t *eusart_context = (sl_iostream_eusart_context_t *)context;
+  if (enable) {
+    EUSART_IntEnable(eusart_context->eusart, EUSART_IF_TXC);
+  } else {
+    EUSART_IntDisable(eusart_context->eusart, EUSART_IF_TXC);
+    EUSART_IntClear(eusart_context->eusart, EUSART_IF_TXC);
+  }
+}
+#endif
 
 /***************************************************************************//**
  * Enable ISR on Rx
@@ -347,10 +369,10 @@ static sl_status_t eusart_deinit(void *context)
   GPIO_PinModeSet(eusart_context->rx_port, eusart_context->rx_pin, gpioModeDisabled, 0);
 
   // De-Configure Flow Control GPIOs
-  if (eusart_context->flags && SLI_IOSTREAM_UART_FLAG_CTS) {
+  if (eusart_context->flags & SLI_IOSTREAM_UART_FLAG_CTS) {
     GPIO_PinModeSet(eusart_context->cts_port, eusart_context->cts_pin, gpioModeDisabled, 0);
   }
-  if (eusart_context->flags && SLI_IOSTREAM_UART_FLAG_RTS) {
+  if (eusart_context->flags & SLI_IOSTREAM_UART_FLAG_RTS) {
     GPIO_PinModeSet(eusart_context->rts_port, eusart_context->rts_pin, gpioModeDisabled, 0);
   }
 

@@ -22,6 +22,11 @@
 struct Event_s;
 struct EventQueue_s;
 
+// We use this instead of NULL at the end of a list so that unscheduled
+// events can be marked by having a 'next' field of NULL.  This makes them
+// easier to initialize.
+#define EVENT_QUEUE_LIST_END ((EmberEvent *) 1)
+
 /** @brief The static part of an event.  Each event can be used with only one
  * event queue.
  */
@@ -179,7 +184,7 @@ typedef struct EventQueue_s {
  *
  * Events with this in their type may only be scheduled with a zero delay.
  */
-void emIsrEventMarker(struct Event_s *);
+void emIsrEventMarker(struct Event_s *event);
 
 /**
  * Initialize 'queue'.  This must be called before any use of 'queue'
@@ -271,6 +276,11 @@ void emberEventSetInactive(EmberEvent *event);
  * Return true if the event is scheduled to run.
  */
 bool emberEventIsScheduled(EmberEvent *event);
+
+/**
+ * Return true if the event queue is empty.
+ */
+bool emberEventQueueIsEmpty(EmberEventQueue *queue);
 
 /**
  * Return the number of milliseconds before 'event' runs, or -1 if 'event'

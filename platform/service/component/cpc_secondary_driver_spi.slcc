@@ -1,7 +1,7 @@
 id: cpc_secondary_driver_spi
 package: platform
 description: SPI driver for Co-Processor Communication Secondary Device
-label: CPC Secondary - SPI driver
+label: CPC Secondary - SPI
 category: Services|Co-Processor Communication|Secondary Device
 quality: alpha
 root_path: platform/service/cpc
@@ -36,7 +36,6 @@ requires:
   - name: spidrv_core
   - name: cpc_core
   - name: cpc_secondary
-  - name: cpc_security_secondary
 template_file:
   - path: template/s0_s1/sl_cpc_drv_spi_secondary_config.h.jinja
     condition: [device_series_0]

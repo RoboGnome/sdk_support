@@ -2,7 +2,7 @@ id: micriumos_bsp
 label: BSP init
 package: micrium-krnx
 description: BSP init
-category: Micrium OS|BSP
+category: Services|Micrium|BSP
 quality: production
 config_file:
   - path: ../../../cfg/bsp_cfg.h
@@ -16,5 +16,7 @@ include:
       - path: bsp_opt_def.h
 provides:
   - name: micriumos_bsp
+requires:
+  - name: emlib_chip
 ui_hints:
   visibility: never

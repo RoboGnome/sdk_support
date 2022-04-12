@@ -28,11 +28,14 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  ******************************************************************************/
+
 #ifndef __PA_AUTO_MODE_H
 #define __PA_AUTO_MODE_H
 #include "rail.h"
 
-#include "em_common.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @addtogroup RAIL_API
@@ -54,12 +57,12 @@ RAIL_ENUM(RAIL_PaBand_t) {
   RAIL_PA_BAND_2P4GIG,
   /** Indicates a Sub-GHz band PA. */
   RAIL_PA_BAND_SUBGIG,
-  /* A count of the choices in this enumeration. Must be last. */
+  /** A count of the choices in this enumeration. Must be last. */
   RAIL_PA_BAND_COUNT,
 };
 
 /**
- * @enum RAIL_PaAutoModeConfigEntry_t
+ * @struct RAIL_PaAutoModeConfigEntry_t
  * @brief Struct to ease specification of appropriate ranges
  * within which a PA should be used.
  */
@@ -75,15 +78,23 @@ typedef struct RAIL_PaAutoModeConfigEntry {
 } RAIL_PaAutoModeConfigEntry_t;
 
 /**
- * The current PA auto mode configuration structure used by the auto mode plugin
+ * The actual PA auto mode configuration structure used by the auto mode plugin
  * to control output power.
  */
-extern RAIL_PaAutoModeConfigEntry_t RAIL_PaAutoModeConfig[];
-
+#if (defined(RAIL_PA_AUTO_MODE_WEAK)) || (_SILICON_LABS_32B_SERIES_2_CONFIG == 4)
+extern RAIL_PaAutoModeConfigEntry_t *RAIL_PaAutoModeConfig;
+#else
+extern RAIL_PaAutoModeConfigEntry_t * const RAIL_PaAutoModeConfig;
+#endif
 /** @} */ // PA Power Amplifier (PA)
 
 /**
  * @}
  * end of RAIL_API
  */
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // __PA_AUTO_MODE_H

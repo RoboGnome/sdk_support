@@ -93,12 +93,14 @@
   - name: device
   - name: device_series_2
   - name: device_sdid_210
+  - name: device_generic_family_efr32xg23
   - name: device_family_efr32zg23
   - name: device_cortexm
   - name: device_arm
   - name: cortexm33
   - name: armv8m.main
   - name: device_security_vault
+  - name: device_pa_14dbm
   - name: device_has_acmp
   - name: device_has_acmp0
   - name: device_has_acmp1
@@ -197,6 +199,7 @@
   - name: device_supports_connect
   - name: device_supports_zwave
   - name: device_supports_zwave_end_device
+  - name: device_compute_basic
 - requires:
   - name: cmsis_core
 - template_contribution:

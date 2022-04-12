@@ -10,7 +10,7 @@
 // <i> Define the number of application bindings allowed.
 #define SL_BTMESH_CONFIG_MAX_APP_BINDS       (4)
 
-// <o SL_BTMESH_CONFIG_MAX_SUBSCRIPTIONS> Maximum number of subscriptions allowed <0-4>
+// <o SL_BTMESH_CONFIG_MAX_SUBSCRIPTIONS> Maximum number of subscriptions allowed <0-255>
 // <i> Default: 4
 // <i> Define the number of subscriptions allowed.
 #define SL_BTMESH_CONFIG_MAX_SUBSCRIPTIONS       (4)
@@ -35,14 +35,14 @@
 // <i> Define the Replay Protection List size. Must be dividable by 16.
 #define SL_BTMESH_CONFIG_RPL_SIZE       (32)
 
-// <o SL_BTMESH_CONFIG_MAX_SEND_SEGS> Maximum number segments allowed for transmitted packets
+// <o SL_BTMESH_CONFIG_MAX_SEND_SEGS> Maximum number of simultaneous segmented transmissions
 // <i> Default: 4
-// <i> Define the maximum number segments allowed for transmitted packets. Set to a low number if not much segmentation is used
+// <i> Define the maximum number simultaneous segmented transmissions allowed. Set to a low number if not much segmentation is used.
 #define SL_BTMESH_CONFIG_MAX_SEND_SEGS       (4)
 
-// <o SL_BTMESH_CONFIG_MAX_RECV_SEGS> Maximum number segments allowed for received packets
+// <o SL_BTMESH_CONFIG_MAX_RECV_SEGS> Maximum number of simultaneous segmented receptions
 // <i> Default: 4
-// <i> Define the maximum number segments allowed for received packets. Set to a low number if not much segmentation is used.
+// <i> Define the maximum number of simultaneous segmented receptions. Set to a low number if not much segmentation is used.
 #define SL_BTMESH_CONFIG_MAX_RECV_SEGS       (4)
 
 // <o SL_BTMESH_CONFIG_MAX_VAS> Maximum number of virtual addresses
@@ -56,6 +56,12 @@
 // <i> For a node the value is 1 or 2  (depending on whether Unprovisioned Device Beaconing is initiated by 1 or 2 Bearers).
 // <i> For a provisioner the value may be over 2.
 #define SL_BTMESH_CONFIG_MAX_PROV_SESSIONS       (2)
+
+// <o SL_BTMESH_CONFIG_MAX_PROV_BEARERS> Maximum number of provisioning bearers allowed
+// <i> Default: 2
+// <i> Define the number of provisioning bearers the application needs.
+// <i> The value is 1 or 2 (depending on whether only one or both of PB-ADV and PB-GATT are used).
+#define SL_BTMESH_CONFIG_MAX_PROV_BEARERS (2)
 
 // <o SL_BTMESH_CONFIG_MAX_GATT_CONNECTIONS> Number of connections to reserve for GATT Proxies <1-2>
 // <i> Default: 2
@@ -137,6 +143,11 @@
 // stored. For devices that do not use PSA ITS the setting is ignored.
 
 #define SL_BTMESH_CONFIG_ITS_KEY_CACHE_SIZE       (4)
+
+// <o SL_BTMESH_CONFIG_MAX_PROXY_ACCESS_CONTROL_LIST_ENTRIES> Maximum number of proxy access control list entries
+// <i> Default: 8
+// <i> Define the number of proxy access control list entries.
+#define SL_BTMESH_CONFIG_MAX_PROXY_ACCESS_CONTROL_LIST_ENTRIES  (8)
 
 // </h> End Mesh Bluetooth Stack Configuration
 

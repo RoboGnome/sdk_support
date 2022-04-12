@@ -10,8 +10,13 @@
 - provides:
   - name: hardware_kit
   - name: hardware_kit_rb
+- define:
+  - name: SL_KIT_NAME
+    value: '"SLWRB4305D"'
+  - name: SL_KIT_REV
+    value: '"A02"'
 - tag:
   - kit:opn:SLWRB4305D
   - kit:pn:WRB4305
   - kit:variant:D
-  - kit:revision:A01
+  - kit:revision:A02
