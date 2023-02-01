@@ -1,4 +1,4 @@
-/***************************************************************************//**
+/*******************************************************************************
  * @file
  * @brief NVM3 definition of the default data structures.
  *******************************************************************************
@@ -32,20 +32,20 @@
 #define NVM3_DEFAULT_H
 #include "nvm3.h"
 
-/***************************************************************************//**
+/*******************************************************************************
  * @addtogroup nvm3
  * @{
  ******************************************************************************/
-/***************************************************************************//**
+/*******************************************************************************
  * @addtogroup nvm3default NVM3 Default Instance
  * @brief NVM3 default instance functions and handles
  * @{
  ******************************************************************************/
 
-extern nvm3_Handle_t *nvm3_defaultHandle;       ///< The default handle.
-extern nvm3_Init_t   *nvm3_defaultInit;         ///< Default initialization data.
+extern nvm3_Handle_t *nvm3_defaultHandle; ///< The default handle.
+extern nvm3_Init_t *nvm3_defaultInit;     ///< Default initialization data.
 
-/***************************************************************************//**
+/*******************************************************************************
  * @brief
  *  Initialize the default NVM3 instance.
  *  Once initialized the instance can be accessed through the NVM3 API using
@@ -56,7 +56,7 @@ extern nvm3_Init_t   *nvm3_defaultInit;         ///< Default initialization data
  ******************************************************************************/
 Ecode_t nvm3_initDefault(void);
 
-/***************************************************************************//**
+/*******************************************************************************
  * @brief
  *  Deinit the default NVM3 instance.
  *

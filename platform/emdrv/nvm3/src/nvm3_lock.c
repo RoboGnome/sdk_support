@@ -1,4 +1,4 @@
-/***************************************************************************//**
+/*******************************************************************************
  * @file
  * @brief NVM3 data access lock API implementation
  *******************************************************************************
@@ -30,24 +30,20 @@
 
 #include "nvm3_lock.h"
 #include "nvm3.h"
+#include "rsi_ccp_common.h"
 
 #ifdef NVM3_HOST_BUILD
 #include "nvm3_config.h"
-#include "nvm3_trace.h"
 #include "nvm3_hal.h"
-#else
-#include "em_core.h"
-#endif
-
-#if defined(SL_COMPONENT_CATALOG_PRESENT)
-#include "sl_component_catalog.h"
-#endif
-
-#if defined(SL_CATALOG_MPU_PRESENT)
-#include "sl_mpu.h"
+#include "nvm3_trace.h"
 #endif
 
 //****************************************************************************
+
+//#define NVM3_CRITICAL_CHECK
+#ifdef NVM3_CRITICAL_CHECK
+static int lockCount = 0;
+#endif
 
 #ifdef NVM3_HOST_BUILD
 #define SL_WEAK
@@ -61,7 +57,7 @@ CORE_DECLARE_IRQ_STATE;
 /// @endcond
 #endif
 
-/***************************************************************************//**
+/*******************************************************************************
  * @addtogroup nvm3
  * @{
  ******************************************************************************/
@@ -72,47 +68,42 @@ nvm3_Obj_t nvm3_internalObjectHandleB;
 nvm3_Obj_t nvm3_internalObjectHandleC;
 nvm3_Obj_t nvm3_internalObjectHandleD;
 const uint8_t nvm3_maxFragmentCount = NVM3_FRAGMENT_COUNT;
-const size_t  nvm3_objHandleSize = sizeof(nvm3_Obj_t);
+const size_t nvm3_objHandleSize = sizeof(nvm3_Obj_t);
 
 /// @endcond
 
-/***************************************************************************//**
+/*******************************************************************************
  * @addtogroup nvm3lock
  * @{
  ******************************************************************************/
 
-/***************************************************************************//**
+/*******************************************************************************
  * @details
  * The default lock-begin implementation.
  ******************************************************************************/
-SL_WEAK void nvm3_lockBegin(void)
-{
-#ifdef NVM3_HOST_BUILD
+SL_WEAK void nvm3_lockBegin(void) {
+#ifdef NVM3_CRITICAL_CHECK
   lockCount++;
 #else
-/// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
-  CORE_ENTER_CRITICAL();
+  /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
+  __disable_irq();
 /// @endcond
 #endif
 }
 
-/***************************************************************************//**
+/*******************************************************************************
  * @details
  * The default lock-end implementation.
  ******************************************************************************/
-SL_WEAK void nvm3_lockEnd(void)
-{
-#ifdef NVM3_HOST_BUILD
-  if (lockCount == 0) {
-    nvm3_tracePrint(NVM3_TRACE_LEVEL_ERROR, "NVM3 ERROR - lockEnd: invalid lock count.\n");
-  }
+SL_WEAK void nvm3_lockEnd(void) {
+#ifdef NVM3_CRITICAL_CHECK
   lockCount--;
 #else
-  CORE_EXIT_CRITICAL();
+  __enable_irq();
 #endif
 }
 
-/***************************************************************************//**
+/*******************************************************************************
  * @details
  *  Disable execution from data area.
  *
@@ -120,9 +111,9 @@ SL_WEAK void nvm3_lockEnd(void)
  *
  * @param[in]  size Size of memory range.
  ******************************************************************************/
-void nvm3_lockDisableExecute(void *address, size_t size)
-{
-#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1U) && defined(SL_CATALOG_MPU_PRESENT)
+void nvm3_lockDisableExecute(void *address, size_t size) {
+#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1U) &&                         \
+    defined(SL_CATALOG_MPU_PRESENT)
   // The memory range used by nvm3 may not be compatible with the mpu.
   // Just ignore errors.
   sl_mpu_disable_execute((uint32_t)address, (uint32_t)address + size - 1, size);
