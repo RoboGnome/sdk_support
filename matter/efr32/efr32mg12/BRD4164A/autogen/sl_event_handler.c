@@ -18,9 +18,9 @@
 #include "sl_simple_led_instances.h"
 #if defined(CONFIG_ENABLE_UART)
 #include "sl_uartdrv_instances.h"
+#endif // CONFIG_ENABLE_UART
 #include "psa/crypto.h"
 #include "cmsis_os2.h"
-#endif // CONFIG_ENABLE_UART
 
 #ifdef SL_WIFI
 #include "sl_spidrv_instances.h"
@@ -81,7 +81,9 @@ void sl_stack_init(void)
 {
     sl_rail_util_pa_init();
     sl_rail_util_pti_init();
-    sl_bt_rtos_init();
+#if !RSI_BLE_ENABLE
+     sl_bt_rtos_init();
+#endif
 }
 
 void sl_internal_app_init(void) {}
